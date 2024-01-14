@@ -173,8 +173,8 @@ class MkTree:
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", type=str, nargs="?", help="file containing directory tree", default="input.txt")
-parser.add_argument("-o", "--output", type=str, nargs="?", help="output filename", default="output.sh")
+parser.add_argument("-i", "--input", type=str, help="file containing directory tree", required=True)
+parser.add_argument("-o", "--output", type=str, help="output filename", required=True)
 parser.add_argument("--indent", type=int, nargs="?", help="directory/file indent size", default=4)
 parser.add_argument("--print", type=bool, action=argparse.BooleanOptionalAction, help="print file content")
 
