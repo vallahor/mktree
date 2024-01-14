@@ -69,7 +69,6 @@ class MkTree:
 
                 next_position = position + index + 1
                 idx = self.parse_dir(current_dir, next_position, node.indent_level + 1)
-
                 dir.directories.append(current_dir)
                 index += idx
             elif isinstance(node, File):
@@ -150,6 +149,8 @@ class MkTree:
         if len(dir.directories) == 1:
             directory = dir.directories[0]
             result = self.gen_sh(directory, f"{path}{directory.name}")
+            if len(directory.files) > 0 and not directory.created:
+                mkdir = self.make_line("mkdir -p", path, [directory.name])
         else:
             dir_names = []
             if len(dir.directories) > 1:
@@ -172,8 +173,8 @@ class MkTree:
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", type=str, help="file containing directory tree", required=True)
-parser.add_argument("-o", "--output", type=str, help="output filename", required=True)
+parser.add_argument("-i", "--input", type=str, nargs="?", help="file containing directory tree", default="input.txt")
+parser.add_argument("-o", "--output", type=str, nargs="?", help="output filename", default="output.sh")
 parser.add_argument("--indent", type=int, nargs="?", help="directory/file indent size", default=4)
 parser.add_argument("--print", type=bool, action=argparse.BooleanOptionalAction, help="print file content")
 
