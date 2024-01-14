@@ -1,7 +1,4 @@
-# usage
-```sh
-python makedirs.py -i input.txt -o output.sh --print --indent 4
-```
+# MkTree
 
 Generate a tree file structure script from a txt file.
 
@@ -47,7 +44,12 @@ touch javascript/modules/lib3/src/index.js
 - Every directory should end with an `/`.
 - Comments starts with `--` and should be make in a empty line or in the end of line.
 
-# Commands
+## usage
+```sh
+python mktree.py -i input.txt -o output.sh --print --indent 4
+```
+
+## Commands
 
 - `-i`, `--input`: input txt filename
 - `-o`, `--output`: output script filename
@@ -65,7 +67,7 @@ ex/
     a3/b/file_b.txt
     a1/b/file_b.txt
 ```
-Throws `Exception: The Directory ex/ at line 1 has at least two directories with same name. Name: a1/. First at line 2 and second one at line 5`
+`Exception: The Directory ex/ at line 1 has at least two directories with same name. Name: a1/. First at line 2 and second one at line 5`
 
 ```
 ex/
@@ -76,7 +78,7 @@ ex/
             file_b3.txt
             file_b1.txt
 ```
-Throws `Exception: The Directory b/ at line 3 has at least two files with same name. Name: file_b1.txt. First at line 4 and second one at line 7`
+`Exception: The Directory b/ at line 3 has at least two files with same name. Name: file_b1.txt. First at line 4 and second one at line 7`
 
 # Examples
 
