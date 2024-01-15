@@ -26,16 +26,16 @@ README.md
 `output.sh`
 ```
 mkdir -p {css,javascript}
-touch {index.html,README.md}
-touch css/styles.css
 mkdir -p css/version/
-touch javascript/{index.js,timer.js ,stuff.js}
+touch css/styles.css
 mkdir -p javascript/modules/{lib1,lib2,lib3}
 touch javascript/modules/lib1/index.js
 mkdir -p javascript/modules/lib2/src/
 touch javascript/modules/lib2/src/index.js
 mkdir -p javascript/modules/lib3/{src,modules}
 touch javascript/modules/lib3/src/index.js
+touch javascript/{index.js,timer.js ,stuff.js}
+touch {index.html,README.md}
 ```
 
 # Explaining the syntax
@@ -46,15 +46,17 @@ touch javascript/modules/lib3/src/index.js
 
 ## usage
 ```sh
-python mktree.py -i input.txt -o output.sh --print --indent 4
+python mktree.py -i input.txt --nosave
+python mktree.py -i input.txt -o output.sh --indent 4
 ```
 
 ## Commands
 
 - `-i`, `--input`: input txt filename
-- `-o`, `--output`: output script filename
+- `-o`, `--output`: output script filename. Default: `output.sh`
 - `--indent`: indent size of directories and files. That's not strict, it's possible to multiples of the indent value.
-- `--print`: print result at stdout
+- `--nosave`: Don't save
+- `--noprint`: Don't print
 
 # Errors
 

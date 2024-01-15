@@ -36,13 +36,14 @@ class MkTree:
         self.indent = indent
         self.line = 0
 
-    def make_file(self):
+    def run(self):
         with open(self.filename, "r") as f:
             lines = f.readlines()
         self.gen_dir(lines)
 
         self.text = self.gen_sh(self.root)
 
+    def save_file(self):
         with open(self.output, "w") as f:
             f.write(self.text)
 
@@ -145,12 +146,10 @@ class MkTree:
     def gen_sh(self, dir: Directory, path: str = "") -> str:
         mkdir = touch = txt = result = ""
 
-
         if len(dir.directories) == 1:
+            dir.created = True
             directory = dir.directories[0]
             result = self.gen_sh(directory, f"{path}{directory.name}")
-            if len(directory.files) > 0 and not directory.created:
-                mkdir = self.make_line("mkdir -p", path, [directory.name])
         else:
             dir_names = []
             if len(dir.directories) > 1:
@@ -162,30 +161,33 @@ class MkTree:
             if not dir.created or len(dir_names) > 0:
                 mkdir = self.make_line("mkdir -p", path, dir_names)
 
-
         if len(dir.files) > 0:
             files_name = [file.name for file in dir.files]
             touch = self.make_line("touch", path, files_name)
 
-        txt += f"{mkdir}{touch}{result}"
+        txt += f"{mkdir}{result}{touch}"
 
         return txt
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", type=str, help="file containing directory tree", required=True)
-parser.add_argument("-o", "--output", type=str, help="output filename", required=True)
+parser.add_argument("-o", "--output", type=str, nargs="?", help="output filename", default="output.sh")
 parser.add_argument("--indent", type=int, nargs="?", help="directory/file indent size", default=4)
-parser.add_argument("--print", type=bool, action=argparse.BooleanOptionalAction, help="print file content")
+parser.add_argument("--noprint", type=bool, action=argparse.BooleanOptionalAction, help="Don't print the script")
+parser.add_argument("--nosave", type=bool, action=argparse.BooleanOptionalAction, help="Don't save any file")
 
 
 def main():
     args = parser.parse_args()
 
     mktree = MkTree(args.input, args.output, args.indent)
-    mktree.make_file()
+    mktree.run()
 
-    if args.print:
+    if not args.nosave:
+        mktree.make_file()
+
+    if not args.noprint:
         mktree.print_text()
 
 
