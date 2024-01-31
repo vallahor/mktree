@@ -96,39 +96,72 @@ class MkTree:
 
         return dirs, indent_level
 
+    def parse_line(self, text, indent_level):
+        expand_section = None
+        if "{" in text or "}" in text:
+            temp = text[:-1].split("{", 1)
+
+            if not text.endswith("}"):
+                raise Exception(f"The Expansion Section at line {self.line} should end with }}")
+
+            if len(temp) == 1:
+                raise Exception(f"The Expansion Section at line {self.line} should start with {{")
+
+            text = temp[0]
+            expand_section = temp[1]
+
+        dir_list = text.split("/")
+        if len(dir_list) > 1:
+            text = dir_list[-1]
+            dir_list = dir_list[:-1]
+
+            dirs, indent_level = self.make_dirs(dir_list, indent_level)
+            self.tree_list.extend(dirs)
+
+        if expand_section:
+            expand_split = expand_section.replace(" ", "").split(",")
+
+            items = []
+            inner_text = ""
+            for expand in expand_split:
+                if "{" in expand:
+                    inner_text += f"{expand}, "
+                elif "}" in expand:
+                    inner_text += expand
+                    items.append(inner_text)
+                    inner_text = ""
+                else:
+                    items.append(expand)
+
+            for item in items:
+                self.parse_line(item, indent_level)
+            return
+
+        if text == "":
+            return
+
+        file = File(text.lstrip(), indent_level, self.line)
+        self.tree_list.append(file)
 
     def gen_dir(self, lines: list[str]) -> Directory:
         for line in lines:
             self.line += 1
             line = line.replace("\n", "").rstrip()
+            line_cleaned = line.lstrip()
 
-            if len(line.lstrip()) == 0:
+            if len(line_cleaned) == 0 or line_cleaned.startswith("--"):
                 continue
 
-            name = line.lstrip()
-            indent = len(line) - len(name)
+            text = line_cleaned
+            indent = len(line) - len(text)
             indent_level = indent / self.indent
+
+            text = text.split("--")[0].rstrip()
 
             if indent % self.indent != 0:
                 raise Exception(f"Wrong indentation at line {self.line} with value {indent}")
 
-            dir_list = name.split("/")
-            if len(dir_list) > 1:
-                name = dir_list[-1]
-
-
-                dir_list = dir_list[:-1]
-                dirs, indent_level = self.make_dirs(dir_list, indent_level)
-                self.tree_list.extend(dirs)
-
-            if "--" in name:
-                name = name.lstrip().split("--")[0]
-
-            if name == "":
-                continue
-
-            file = File(name.lstrip(), indent_level, self.line)
-            self.tree_list.append(file)
+            self.parse_line(text, indent_level)
 
         _ = self.parse_dir(self.root)
 
