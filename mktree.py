@@ -20,7 +20,7 @@ class File:
 
 
 class MkTree:
-    filename: str
+    input: str
     output: str
     tree_list: list[Union[Directory, File]]
     root: Directory
@@ -28,8 +28,8 @@ class MkTree:
     text: str
     line: int
 
-    def __init__(self, filename, output, indent):
-        self.filename = filename
+    def __init__(self, input, output, indent):
+        self.input = input
         self.output = output
         self.tree_list = []
         self.root = Directory("root", 0, 1)
@@ -37,9 +37,7 @@ class MkTree:
         self.line = 0
 
     def run(self):
-        with open(self.filename, "r") as f:
-            lines = f.readlines()
-        self.gen_dir(lines)
+        self.gen_dir(self.input)
 
         self.text = self.gen_sh(self.root)
 
@@ -204,20 +202,28 @@ class MkTree:
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--input", type=str, help="file containing directory tree", required=True)
+parser.add_argument("-i", "--input", type=str, help="Input a inline tree struct")
+parser.add_argument("-f", "--file", type=str, help="file containing directory tree")
 parser.add_argument("-o", "--output", type=str, nargs="?", help="output filename", default="output.sh")
 parser.add_argument("--indent", type=int, nargs="?", help="directory/file indent size", default=4)
 parser.add_argument("--noprint", type=bool, action=argparse.BooleanOptionalAction, help="Don't print the script")
-parser.add_argument("--nosave", type=bool, action=argparse.BooleanOptionalAction, help="Don't save any file")
+parser.add_argument("--save", type=bool, action=argparse.BooleanOptionalAction, help="Don't save any file", default=False)
 
 
 def main():
     args = parser.parse_args()
 
-    mktree = MkTree(args.input, args.output, args.indent)
+    if args.file:
+        with open(args.file, "r") as f:
+            lines = f.readlines()
+        input = lines
+    else:
+        input = [args.input]
+
+    mktree = MkTree(input, args.output, args.indent)
     mktree.run()
 
-    if not args.nosave:
+    if args.save:
         mktree.make_file()
 
     if not args.noprint:
