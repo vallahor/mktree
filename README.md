@@ -52,8 +52,9 @@ touch ex/{file1_ex.txt,file2_ex.txt}
 
 ## usage
 ```sh
-python mktree.py -i input.txt --nosave
-python mktree.py -i input.txt -o output.sh --indent 4
+python mktree.py -f input.txt
+python mktree.py -f input.txt -o output.sh -save --indent 4
+python mktree.py -i "src/{index.html, css/styles.css, index.js}"
 ```
 
 ## Commands
