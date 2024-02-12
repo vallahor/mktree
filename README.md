@@ -58,10 +58,11 @@ python mktree.py -i input.txt -o output.sh --indent 4
 
 ## Commands
 
-- `-i`, `--input`: input txt filename
+- `-i`, `--input`: input txt
+- `-f`, `--file`: file input txt filename
 - `-o`, `--output`: output script filename. Default: `output.sh`
 - `--indent`: indent size of directories and files. That's not strict, it's possible to multiples of the indent value.
-- `--nosave`: Don't save
+- `--save`: Save
 - `--noprint`: Don't print
 
 # Errors
@@ -87,6 +88,12 @@ ex/
             file_b1.txt
 ```
 `Exception: The Directory b/ at line 3 has at least two files with same name. Name: file_b1.txt. First at line 4 and second one at line 7`
+
+Extends error
+```
+ex/src/{file} -- WRONG Will not create the directories and file
+ex/src/{file,} -- Correct
+```
 
 # Examples
 
